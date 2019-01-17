@@ -3,6 +3,7 @@ const User = require("../../models/User");
 const gravatar = require("gravatar");
 const bcrybt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const password = require("passport");
 
 //to get secret Key
 const keys = require("../../config/keys");
@@ -70,4 +71,17 @@ route.post("/login", (req, res) => {
     });
   });
 });
+
+//@route Post api/users/current
+//@desc Loged-in user details
+//@access Private
+
+route.get(
+  "/current",
+  password.authenticate("jwt", { session: false }),
+  (req, res) => {
+    res.json(req.user);
+  }
+);
+
 module.exports = route;
