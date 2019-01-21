@@ -8,6 +8,10 @@ const password = require("passport");
 //to get secret Key
 const keys = require("../../config/keys");
 
+//Load Validation
+const validateRegisterInput = require("../../validator/register");
+const validateLoginInput = require("../../validator/login");
+
 const route = express.Router();
 
 route.get("/test", (req, res) => res.json({ msg: "Users API Works" }));
@@ -16,6 +20,11 @@ route.get("/test", (req, res) => res.json({ msg: "Users API Works" }));
 //@desc Resigter User
 //@access Public
 route.post("/register", (req, res) => {
+  //check validation here
+  const { errors, isValid } = validateRegisterInput(req.body);
+  if (!isValid) {
+    return res.status(400).json({ error: errors });
+  }
   User.findOne({ email: req.body.email }).then(user => {
     if (user) {
       return res.status(400).json({ Email: "Email Already Exist" });
@@ -47,6 +56,11 @@ route.post("/register", (req, res) => {
 });
 
 route.post("/login", (req, res) => {
+  const { errors, isValid } = validateLoginInput(req.body);
+  if (!isValid) {
+    return res.status(400).json({ error: errors });
+  }
+
   const email = req.body.email;
   const password = req.body.password;
 
